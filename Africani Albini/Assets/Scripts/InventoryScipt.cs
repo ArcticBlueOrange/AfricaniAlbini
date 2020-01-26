@@ -22,7 +22,7 @@ public class InventoryScipt : MonoBehaviour
                 InventoryMenu.gameObject.SetActive(true);
                 InventoryActive = true;
                 Cursor.visible = true;
-                Time.timeScale = 0f;
+                Time.timeScale = 0.3f;
             }
             else if (InventoryActive == true)
             {

@@ -8,6 +8,7 @@ public class CharController_Motor : MonoBehaviour {
 
     public float WalkSpeed = 7.0f;
     public float RunnigSpeed = 12.0f;
+    public float JumpHeight = 8.0f;
 
 	public float sensitivity = 30.0f;
 	public float WaterHeight = 15.5f;
@@ -22,6 +23,7 @@ public class CharController_Motor : MonoBehaviour {
 	float rotX, rotY;
 	public bool webGLRightClickRotation = true;
 	float gravity = -9.8f;
+    Vector3 movement;
 
 
 	void Start(){
@@ -35,6 +37,7 @@ public class CharController_Motor : MonoBehaviour {
             cam = cam1;
             cam2.gameObject.SetActive(false);
 		}
+        movement = new Vector3(0, 0, 0);
 	}
 
 
@@ -49,7 +52,8 @@ public class CharController_Motor : MonoBehaviour {
 
 
 	void Update(){
-        if(Input.GetButton("Run"))
+
+        if (Input.GetButton("Run"))
         {
             speed = RunnigSpeed;
         }
@@ -57,6 +61,13 @@ public class CharController_Motor : MonoBehaviour {
         {
             speed = WalkSpeed;
         }
+
+        //remove just this to not have buggy jump feature
+        if (Input.GetButtonDown("Jump") && character.isGrounded)
+        {
+            movement.y = JumpHeight;
+        }
+        movement.y += gravity * Time.deltaTime;
 
         if(Input.GetKeyDown(KeyCode.N))
         {
@@ -85,8 +96,9 @@ public class CharController_Motor : MonoBehaviour {
 
 		CheckForWaterHeight ();
 
-
-		Vector3 movement = new Vector3 (moveFB, gravity, moveLR);
+        movement.x = moveFB;
+        movement.z = moveLR;
+		//Vector3 movement = new Vector3 (moveFB, verticalMovement, moveLR);
 
 
 
