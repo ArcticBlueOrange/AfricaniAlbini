@@ -9,10 +9,13 @@ public class CharController_Motor : MonoBehaviour {
     public float WalkSpeed = 7.0f;
     public float RunnigSpeed = 12.0f;
     public float JumpHeight = 8.0f;
+    public bool flight = true,
+                noclip = true;
 
 	public float sensitivity = 30.0f;
 	public float WaterHeight = 15.5f;
 	CharacterController character;
+    CapsuleCollider collider;
 
 	private GameObject cam;
     public GameObject cam1;
@@ -29,6 +32,7 @@ public class CharController_Motor : MonoBehaviour {
 	void Start(){
 		//LockCursor ();
 		character = GetComponent<CharacterController> ();
+        collider = GetComponent<CapsuleCollider>();
 		if (Application.isEditor) {
 			webGLRightClickRotation = false;
 			sensitivity = sensitivity * 1.5f;
@@ -51,7 +55,7 @@ public class CharController_Motor : MonoBehaviour {
 
 
 
-	void Update(){
+    void Update() {
 
         if (Input.GetButton("Run"))
         {
@@ -62,13 +66,29 @@ public class CharController_Motor : MonoBehaviour {
             speed = WalkSpeed;
         }
 
-        //remove just this to not have buggy jump feature
-        if (Input.GetButtonDown("Jump") && character.isGrounded)
+        if (flight)
         {
-            movement.y = JumpHeight;
+            if (Input.GetButton("Jump")) movement.y = JumpHeight;
+            else if (Input.GetKey(KeyCode.C)) movement.y = -JumpHeight;
+            else movement.y = 0;
         }
-        movement.y += gravity * Time.deltaTime;
+        else if (character.isGrounded)
+        {
+            if (Input.GetButtonDown("Jump")) movement.y = JumpHeight;
+            else movement.y = 0;
+        }
+        else movement.y += gravity * Time.deltaTime;
 
+
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.G)) flight = !flight;
+
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
+        {
+            noclip = !noclip;
+            collider.enabled = !noclip;
+        }
+        
+        /* rimuovo temp.
         if(Input.GetKeyDown(KeyCode.N))
         {
             if(NightVision==false)
@@ -83,13 +103,16 @@ public class CharController_Motor : MonoBehaviour {
                 cam = cam1;
                 NightVision = false;
             }
-        }
+        }/**/
 
 		moveFB = Input.GetAxis ("Horizontal") * speed;
 		moveLR = Input.GetAxis ("Vertical") * speed;
 
-		rotX = Input.GetAxis ("Mouse X") * sensitivity;
-		rotY = Input.GetAxis ("Mouse Y") * sensitivity;
+        //if (!GetComponent<InventoryManager>().InventoryActive)
+        {
+    		rotX = Input.GetAxis ("Mouse X") * sensitivity;
+	    	rotY = Input.GetAxis ("Mouse Y") * sensitivity;
+        }
 
 		//rotX = Input.GetKey (KeyCode.Joystick1Button4);
 		//rotY = Input.GetKey (KeyCode.Joystick1Button5);
