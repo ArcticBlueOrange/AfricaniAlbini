@@ -12,8 +12,7 @@ public class TorchObject : InventoryObject
     //public GameObject playerObject;
     //public Sprite icon;
     public bool active = false;
-    public bool equip = false;
-    // Start is called before the first frame update
+    
     private void Start()
     {
         playerObject = GameObject.FindGameObjectWithTag("Player");
@@ -21,17 +20,16 @@ public class TorchObject : InventoryObject
         //Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>());
     }
 
-    // Update is called once per frame
     private void Update()
     {
         ////print("A torch is ALIVE");
-        //if (equip)
-        //    {
-        //        transform.position = playerObject.transform.position;
-        //        Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>(), true);
-        //    //transform.GetComponent<Collider>();
-        //    //transform.GetComponent<>
-        //}   
+        if (equip)
+            {
+                transform.position = playerObject.transform.position + playerObject.transform.forward * 2;
+                Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>(), true);
+            //transform.GetComponent<Collider>();
+            //transform.GetComponent<>
+        }   
     }
 
     public override void useObject()
@@ -40,19 +38,32 @@ public class TorchObject : InventoryObject
         active = !active;
         if (active) print("Turned On");
         else print("Turned Off");
+        transform.Find("SpotLight").gameObject.SetActive(active);
         //if ( active )
         //{
-        //    transform.gameObject.SetActive(active);
+        //    //transform.gameObject.SetActive(active);
         //    transform.Find("SpotLight").gameObject.SetActive(active);
-        //    transform.Find("Mesh").gameObject.SetActive(!active);
+        //    //transform.Find("Mesh").gameObject.SetActive(!active);
         //} else
         //{
-        //    transform.Find("SpotLight").gameObject.SetActive(!active);
-        //    transform.Find("Mesh").gameObject.SetActive(active);
-        //    transform.gameObject.SetActive(!active);
+        //    transform.Find("SpotLight").gameObject.SetActive(active);
+        //    //transform.Find("Mesh").gameObject.SetActive(active);
+        //    //transform.gameObject.SetActive(active);
         //}
-
+        //equip = active;
     }
+
+    //public override void equipObject()
+    //{
+    //    //transform.gameObject
+    //}
+    //
+    //public override void unEquipObject()
+    //{
+    //    //transform.gameObject
+    //}
+
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Player")

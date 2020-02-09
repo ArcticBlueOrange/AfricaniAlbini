@@ -11,7 +11,7 @@ public class InventoryObject : MonoBehaviour
     public string description;
     public GameObject playerObject;
     public Sprite icon;
-
+    public bool equip = false;
     // Start is called before the first frame update
     private void Start()
     {
@@ -19,12 +19,40 @@ public class InventoryObject : MonoBehaviour
         Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>());
     }
 
-    // Update is called once per frame
     private void Update()
     {
-        
+        if (equip)
+        {
+            transform.position = playerObject.transform.position + playerObject.transform.forward * 2;
+            Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>(), true);
+            //transform.GetComponent<Collider>();
+            //transform.GetComponent<>
+        }
     }
 
-    public virtual void useObject() { print("(virtual) Using " + name); }
+    //these methods need override partially or totally by child classes
+    public virtual void useObject()
+    {
+        print("(virtual) Using " + name);
+    }
 
+    public virtual void equipObject()
+    {
+        print("(virtual) Equipping " + name);
+        equip = true;
+        pickable = false;
+        transform.Find("Mesh").gameObject.SetActive(equip);
+        transform.gameObject.SetActive(equip);
+        pickable = !equip;
+    }
+
+    public virtual void unEquipObject()
+    {
+        print("(virtual) Unequipping " + name);
+        equip = false;
+        //pickable = false;
+        transform.Find("Mesh").gameObject.SetActive(equip);
+        transform.gameObject.SetActive(equip);
+        pickable = !equip;
+    }
 }

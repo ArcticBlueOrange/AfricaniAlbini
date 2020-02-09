@@ -25,11 +25,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 649043266681586610}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 7981210755280485009}
+  m_Father: {fileID: 4525817333135198477}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6396255767710440113
@@ -79,6 +79,41 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &1318496990149835149
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4525817333135198477}
+  m_Layer: 0
+  m_Name: Mesh
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4525817333135198477
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1318496990149835149}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 2089238459741524442}
+  - {fileID: 4916285865102067638}
+  - {fileID: 3500631658750255314}
+  - {fileID: 4770920535553360639}
+  - {fileID: 1105241439898121397}
+  m_Father: {fileID: 7981210755280485009}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3225447757968918682
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,10 +139,10 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3225447757968918682}
   m_LocalRotation: {x: 0.52327543, y: -0.34203392, z: 0.72694236, w: 0.28416628}
-  m_LocalPosition: {x: -4.0762453, y: 5.903862, z: -1.005454}
-  m_LocalScale: {x: 1, y: 0.99999994, z: 1}
+  m_LocalPosition: {x: -4.076233, y: 5.903862, z: -1.0054626}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 7981210755280485009}
+  m_Father: {fileID: 4525817333135198477}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!108 &4042911558724423943
@@ -197,11 +232,11 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4901077134839394503}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: 0, y: 0, z: 0.5}
-  m_LocalScale: {x: 0.08675328, y: 0.40659365, z: 0.56957763}
+  m_LocalScale: {x: 0.08675328, y: 0.40659353, z: 0.5695774}
   m_Children: []
-  m_Father: {fileID: 7981210755280485009}
+  m_Father: {fileID: 4525817333135198477}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -400,11 +435,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5755728872395448509}
-  m_LocalRotation: {x: 1, y: 0, z: 0, w: -0.0000000754979}
-  m_LocalPosition: {x: -0.30222732, y: -0.008215515, z: 1.4327465}
+  m_LocalRotation: {x: 1, y: -0, z: -0, w: -0.0000000754979}
+  m_LocalPosition: {x: -0.3022461, y: -0.008214951, z: 1.4327393}
   m_LocalScale: {x: -0.09723338, y: -0.02947837, z: -0.14383067}
   m_Children: []
-  m_Father: {fileID: 7981210755280485009}
+  m_Father: {fileID: 4525817333135198477}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7816831763605248064
@@ -479,11 +514,11 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6166077390927218986}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
+  m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.69402623, y: 1.4124701, z: 0.56957763}
+  m_LocalScale: {x: 0.69402623, y: 1.4124696, z: 0.5695774}
   m_Children: []
-  m_Father: {fileID: 7981210755280485009}
+  m_Father: {fileID: 4525817333135198477}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -574,13 +609,9 @@ Transform:
   m_GameObject: {fileID: 6384324427056924802}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 675.11, y: 17.59, z: 277.48}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.23515, y: 0.23515, z: 0.23515}
   m_Children:
-  - {fileID: 2089238459741524442}
-  - {fileID: 4916285865102067638}
-  - {fileID: 3500631658750255314}
-  - {fileID: 4770920535553360639}
-  - {fileID: 1105241439898121397}
+  - {fileID: 4525817333135198477}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -608,11 +639,11 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6384324427056924802}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2.3473778, y: 1, z: 3.8737495}
-  m_Center: {x: -0.010055065, y: 0, z: -0.0025521517}
+  m_Size: {x: 9.445851, y: 7.856689, z: 8.834074}
+  m_Center: {x: 0.042826124, y: -0.0828061, z: -0.03140454}
 --- !u!65 &576641698
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -624,8 +655,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.5597458, y: 0.2803263, z: 3.04907}
-  m_Center: {x: -0.029986382, y: -0.009995729, z: -0.03498435}
+  m_Size: {x: 1.5597458, y: 0.73030823, z: 3.8770244}
+  m_Center: {x: -0.02998641, y: -0.017256642, z: -0.11485434}
 --- !u!114 &576641696
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -640,7 +671,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickable: 1
   weight: 1
-  name: Phone
-  description: A simple phone
+  name: Telefono
+  description: "C'\xE8 uno strano codice scritto sopra..."
   playerObject: {fileID: 0}
-  icon: {fileID: -5165821581156374515, guid: 37d693ebb66855b4e84f1865e4874a90, type: 3}
+  icon: {fileID: -8846318263883502149, guid: 37d693ebb66855b4e84f1865e4874a90, type: 3}
+  equip: 0

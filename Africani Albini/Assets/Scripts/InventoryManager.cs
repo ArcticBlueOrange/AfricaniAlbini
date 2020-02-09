@@ -16,18 +16,17 @@ public class InventoryManager : MonoBehaviour
     public float menuObjectsOffset = -25;
     public GameObject objectButton;
     public GameObject selectionArea;
-    private int selection = -1;
+    [SerializeField] private int selection = -1;
     //public int Selection { get => selection; set => selection = value % objects.Count; }
-    // Start is called before the first frame update
     void Start()
     {
+        //TODO MOVE COMMANDS RELATED TO INVENTORY MENU TO A SEPARATE SCRIPT
         InventoryMenu.transform.Find("_GUI").gameObject.SetActive(true);
         InventoryMenu.transform.Find("_INVENTORY").gameObject.SetActive(false);
         objects = new List<GameObject>();
         uiObjects = new List<GameObject>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.I))
@@ -57,29 +56,46 @@ public class InventoryManager : MonoBehaviour
         {
             if (Input.GetAxisRaw("Mouse ScrollWheel") > 0)
             {
-                selection = (selection + 1) % objects.Count;
-                print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().name);
+                unSelectObject();
+                //selection = ;
+                selectObject( (selection + 1) % objects.Count ) ;
+                //print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().name);
             }
             if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
             {
+                unSelectObject();
                 //print("( " + selection + " - 1 ) % " + objects.Count);
                 // quanto fa (0 - 1) % 2 ????? nada
-                selection = selection == 0 ? objects.Count - 1 : (selection - 1) ;
-                print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().name);
+                //selection = selection == 0 ? objects.Count - 1 : (selection - 1) ;
+                selectObject( selection == 0 ? objects.Count - 1 : (selection - 1) );
+                //print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().name);
             }
             if (Input.GetKeyDown(KeyCode.Mouse1)) //drop
             {
                 GameObject obj = objects[selection];
                 InventoryObject inv = obj.GetComponent<InventoryObject>();
+                unSelectObject();
                 objects.RemoveAt(selection);
-                selection = selection >= objects.Count ? objects.Count - 1 : selection;
+                selectObject( selection >= objects.Count ? objects.Count - 1 : selection );
+                //selection = selection >= objects.Count ? objects.Count - 1 : selection;
                 print("Removing " + inv.name);
                 obj.transform.position = transform.position + transform.forward * 2;
-                obj.SetActive(true);
+                
+                inv.equipObject();
+                //obj.SetActive(true);
+                inv.equip = false;
+                inv.pickable = true; // se l'hai preso era sicuramente pickable
                 //obj = objects[selection];
                 //inv = obj.GetComponent<InventoryObject>();
                 //print("Selected " + selection + inv.name);
             }
+
+            if (Input.GetKeyDown(KeyCode.Q)) //unequip everything
+            {
+                unSelectObject();
+                selection = -1;
+            }
+
             if (Input.GetKeyDown(KeyCode.Mouse0)) // use
             {
                 GameObject obj = objects[selection];
@@ -102,9 +118,9 @@ public class InventoryManager : MonoBehaviour
                 objects.Add(obj);
                 obj.SetActive(false);
                 //GameObject.Destroy(obj.gameObject);
-                selection = objects.Count - 1;
+                unSelectObject();
+                selectObject(objects.Count - 1);
                 print("Picked " + selection + inv.name);
-
                 if (InventoryActive) refreshUI();
             }
         }
@@ -112,13 +128,32 @@ public class InventoryManager : MonoBehaviour
 
     public void selectObject(int i)
     {
+        //unSelectObject();
         print("Requesting " + i);
+        //need to unequip previous item
         selection = Mathf.Min(i, objects.Count-1);
         if (selection >= 0)
         {
-            print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().name);
+            InventoryObject inv = objects[selection].GetComponent<InventoryObject>();
+            print("Selected " + selection + inv.name);
+            inv.equipObject();
+            if (!InventoryActive)
+            {
+                //transform.Find("Object").GetComponent<MeshFilter>().mesh  = objects[selection].GetComponent<MeshFilter>().mesh;
+            }
         }
         if (InventoryActive) refreshUI();
+    }
+    public void unSelectObject()
+    {
+        print("Unequipping " + selection);
+        if (selection >= 0 && objects.Count > 0)
+        {
+            InventoryObject inv = objects[selection].GetComponent<InventoryObject>();
+            print("Unselected " + selection + inv.name);
+            inv.unEquipObject();
+        } else { print("Empty bag"); }
+        //if (InventoryActive) refreshUI();
     }
 
 
@@ -148,7 +183,9 @@ public class InventoryManager : MonoBehaviour
             //uiobj.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>() = obj.GetComponent<InventoryObject>().icon;
             uiobj.transform.Find("Clickable").GetComponent<TMPro.TextMeshProUGUI>().text = "- " + count + obj.GetComponent<InventoryObject>().name;
             uiobj.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>().sprite = obj.GetComponent<InventoryObject>().icon;
-            uiobj.transform.Find("Clickable").GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate { selectObject(uiObjects.IndexOf(uiobj)); }) ;
+            uiobj.transform.Find("Clickable").GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate {
+                unSelectObject();
+                selectObject(uiObjects.IndexOf(uiobj));}) ;
             //print("Button " + count + " assigned to function delegate { selectObject(" + count + ")}");
             uiobj.SetActive(true);
             uiObjects.Add(uiobj);
