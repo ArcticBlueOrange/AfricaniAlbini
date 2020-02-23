@@ -16,6 +16,7 @@ public class TorchObject : InventoryObject
     private void Start()
     {
         playerObject = GameObject.FindGameObjectWithTag("Player");
+        rb = GetComponent<Rigidbody>();
         //print("A torch is born");
         //Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>());
     }

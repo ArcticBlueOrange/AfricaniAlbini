@@ -72,22 +72,17 @@ public class InventoryManager : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.Mouse1)) //drop
             {
+                print("Dropping obj");
                 GameObject obj = objects[selection];
                 InventoryObject inv = obj.GetComponent<InventoryObject>();
-                unSelectObject();
+                inv.dropObject();
                 objects.RemoveAt(selection);
+                obj.transform.position = transform.position + transform.forward * 2;
                 selectObject( selection >= objects.Count ? objects.Count - 1 : selection );
                 //selection = selection >= objects.Count ? objects.Count - 1 : selection;
-                print("Removing " + inv.name);
-                obj.transform.position = transform.position + transform.forward * 2;
-                
-                inv.equipObject();
+                //unSelectObject();
                 //obj.SetActive(true);
-                inv.equip = false;
-                inv.pickable = true; // se l'hai preso era sicuramente pickable
                 //obj = objects[selection];
-                //inv = obj.GetComponent<InventoryObject>();
-                //print("Selected " + selection + inv.name);
             }
 
             if (Input.GetKeyDown(KeyCode.Q)) //unequip everything

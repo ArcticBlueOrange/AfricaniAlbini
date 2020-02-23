@@ -12,11 +12,13 @@ public class InventoryObject : MonoBehaviour
     public GameObject playerObject;
     public Sprite icon;
     public bool equip = false;
+    protected Rigidbody rb;
     // Start is called before the first frame update
     private void Start()
     {
         playerObject = GameObject.FindGameObjectWithTag("Player");
         Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>());
+        rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -25,6 +27,7 @@ public class InventoryObject : MonoBehaviour
         {
             transform.position = playerObject.transform.position + playerObject.transform.forward * 2;
             Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>(), true);
+            
             //transform.GetComponent<Collider>();
             //transform.GetComponent<>
         }
@@ -42,8 +45,8 @@ public class InventoryObject : MonoBehaviour
         equip = true;
         pickable = false;
         transform.Find("Mesh").gameObject.SetActive(equip);
-        transform.gameObject.SetActive(equip);
-        pickable = !equip;
+        transform.gameObject.SetActive(equip); 
+        setColliders(false);
     }
 
     public virtual void unEquipObject()
@@ -53,6 +56,26 @@ public class InventoryObject : MonoBehaviour
         //pickable = false;
         transform.Find("Mesh").gameObject.SetActive(equip);
         transform.gameObject.SetActive(equip);
-        pickable = !equip;
+        setColliders(true);
+
+        pickable = true;// !equip;
+    }
+
+    public virtual void dropObject()
+    {
+        Debug.Log("Dropping " + name);
+        //GetComponent<Collider>().enabled = true;
+        equip = false;
+        pickable = true;
+        transform.Find("Mesh").gameObject.SetActive(true);
+        transform.gameObject.SetActive(true);
+        rb.velocity = new Vector3(0,0,0);
+        setColliders(true);
+    }
+
+    void setColliders(bool val)
+    {
+        Collider[] colls = GetComponents<Collider>();
+        foreach (Collider coll in colls) { coll.enabled = val; print("Collider " + coll + " set to " + val); }
     }
 }
