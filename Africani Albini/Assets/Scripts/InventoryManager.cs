@@ -7,7 +7,9 @@ public class InventoryManager : MonoBehaviour
     //TODO move graphic code to Canvas UI Object
     public float size = 100,
                  maxHealth = 100,
-                 playerHealth = 100;
+                 playerHealth = 100,
+                 maxEnergy = 100,
+                 playerEnergy = 100;
 
     public Canvas InventoryMenu;
     public bool InventoryActive = false;
@@ -201,6 +203,7 @@ public class InventoryManager : MonoBehaviour
         } else selectionArea.SetActive(false);
         //health (and energy)
         InventoryMenu.transform.Find("_INVENTORY").Find("_HealthAmount").GetComponent<TMPro.TextMeshProUGUI>().text = playerHealth + "/" + maxHealth;
+        InventoryMenu.transform.Find("_INVENTORY").Find("_EnergyAmount").GetComponent<TMPro.TextMeshProUGUI>().text = playerEnergy + "/" + maxEnergy;
         //todo
     }
 

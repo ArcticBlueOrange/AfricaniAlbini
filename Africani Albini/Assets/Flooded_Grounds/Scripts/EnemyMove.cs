@@ -5,71 +5,69 @@ using UnityEngine;
 using UnityEngine.AI;
 using Random = UnityEngine.Random;
 
+
+//THIS SCRIPT SHOULD ONLY CONTAIN  DATA REFERRING ON HOW TO MOVE THE ENEMY
 public class EnemyMove : MonoBehaviour
 {
-    [SerializeField] Transform Target1;
-    [SerializeField] Transform Target2;
-    [SerializeField] Transform Target3;
+    //[SerializeField] Transform Target1;
+    //[SerializeField] Transform Target2;
+    //[SerializeField] Transform Target3;
+    [SerializeField] Transform[] wayPoints;
 
     private Transform TargetPosition;
     [SerializeField] GameObject playerObject;
 
-    [SerializeField] int CurrentTarget = 1;
+    private int lastTarget = 1;
+    [SerializeField] int currentTarget = 0;
     [SerializeField] float waitTime = 2;
     private bool Contact = false;
-    private int lastTarget = 1;
-    [SerializeField] int enemyState = 0;
     [SerializeField] float walkSpeed = 5;
     [SerializeField] float runSpeed = 10;
-
-
-
-
+    private EnemyData data;
     private Animator anim;
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        data = GetComponent<EnemyData>();
+        wayPoints = data.patrolWayPoints.GetComponentsInChildren<Transform>();
         playerObject = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
-        TargetPosition = Target1;
+        TargetPosition = wayPoints[currentTarget];
         //MoveToTarget();
-        lastTarget = CurrentTarget;
-        enemyState = 0;//1;
+        lastTarget = wayPoints.Length - 1;
+        print(wayPoints.Length);
+        foreach(Transform t in wayPoints)
+        { print(t.name); }
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.gameObject.CompareTag("EnemieTarget")) {
-            if(Contact == false)
-            {
-                Contact = true;
-                CurrentTarget = Random.Range(1, 4);
-
-                if(CurrentTarget == lastTarget)
-                {
-                    TryAgain();
-                }
-                else
-                {
-                    StartCoroutine(Wait());
-                }
-            }
-        }
-    }
-
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    Vector3 horizontalOthr = new Vector3(other.transform.position.x, 0, other.transform.position.z);
+    //    Vector3 horizontalSelf = new Vector3(transform.position.x, 0, transform.position.z);
+    //    float distance = Vector3.Distance(horizontalOthr, horizontalSelf);
+    //    //print(distance);
+    //    if(other.gameObject.CompareTag("EnemieTarget") && distance <= 4f ) {
+    //        //print(other.name);
+    //        //print(other.isTrigger);
+    //        if(Contact == false)
+    //        {
+    //            Contact = true;
+    //            currentTarget = Random.Range(0, wayPoints.Length);
+    //
+    //            if(currentTarget == lastTarget )//|| wayPoints[currentTarget].tag != "EnemieTarget")
+    //            {
+    //                TryAgain();
+    //            }
+    //            else
+    //            {
+    //                StartCoroutine(Wait());
+    //            }
+    //        }
+    //    }
+    //}
     private void TryAgain()
     {
-        if(lastTarget==1)
-        {
-            CurrentTarget = lastTarget + 1;
-        }
-        else if(lastTarget>1)
-        {
-            CurrentTarget = lastTarget -1;
-        }
+        currentTarget = (currentTarget + 1) % wayPoints.Length;
         StartCoroutine(Wait());
     }
-
     IEnumerator Wait()
     {
         GetComponent<NavMeshAgent>().isStopped = true;
@@ -80,50 +78,51 @@ public class EnemyMove : MonoBehaviour
         //MoveToTarget();
         
     }
-
-    // Update is called once per frame
     void Update()
     {
-        if ( Input.GetKeyDown(KeyCode.F2)) { enemyState = 0; print("State " + enemyState);} // idle
-        if ( Input.GetKeyDown(KeyCode.F3)) { enemyState = 1; print("State " + enemyState);} // patrol
-        if ( Input.GetKeyDown(KeyCode.F4)) { enemyState = 2; print("State " + enemyState);} // inseguimento
-
-        switch( enemyState)
+        switch( data.enemyState)
         {
-            case 0:
+            case EnemyData.EnemyStateEnum.idle:
                 StartCoroutine(Wait());
                 break;
-            case 1:
+            case EnemyData.EnemyStateEnum.patrol:
                 MoveToTarget();
                 break;
-            case 2:
+            case EnemyData.EnemyStateEnum.chase:
                 followPlayer();
+                break;
+            case EnemyData.EnemyStateEnum.search:
                 break;
         }
     }
-
     void MoveToTarget()
     {
         GetComponent<NavMeshAgent>().isStopped = false;
         anim.SetInteger("State", 0);
-        if (CurrentTarget==1)
-        {
-            TargetPosition = Target1;
-        }
-        if (CurrentTarget == 2)
-        {
-            TargetPosition = Target2;
-        }
-        if (CurrentTarget == 3)
-        {
-            TargetPosition = Target3;
-        }
+
+        TargetPosition = wayPoints[currentTarget];
+
         GetComponent<NavMeshAgent>().speed = walkSpeed;
         GetComponent<NavMeshAgent>().destination = TargetPosition.position;
-        lastTarget = CurrentTarget;
+        lastTarget = currentTarget;
+        //currentTarget = (currentTarget + 1) % wayPoints.Length;
         Contact = false;
+        Vector3 horizontalOthr = new Vector3(wayPoints[currentTarget].transform.position.x, 0, wayPoints[currentTarget].transform.position.z);
+        Vector3 horizontalSelf = new Vector3(transform.position.x, 0, transform.position.z);
+        if (Vector3.Distance(horizontalOthr, horizontalSelf) < 4)
+        {
+            currentTarget = Random.Range(0, wayPoints.Length);
+            //TODO maybe it's better not random???
+            if (currentTarget == lastTarget)//|| wayPoints[currentTarget].tag != "EnemieTarget")
+            {
+                TryAgain();
+            }
+            else
+            {
+                StartCoroutine(Wait());
+            }
+        }
     }
-
     void followPlayer()
     {
         anim.SetInteger("State", 0);
@@ -131,6 +130,4 @@ public class EnemyMove : MonoBehaviour
         GetComponent<NavMeshAgent>().speed = runSpeed;
         GetComponent<NavMeshAgent>().destination = playerObject.transform.position;
     }
-
-
 }
