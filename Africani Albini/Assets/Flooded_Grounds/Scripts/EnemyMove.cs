@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using Random = UnityEngine.Random;
+//using Random = UnityEngine.Random;
 
 
 //THIS SCRIPT SHOULD ONLY CONTAIN  DATA REFERRING ON HOW TO MOVE THE ENEMY
@@ -28,16 +28,22 @@ public class EnemyMove : MonoBehaviour
     void Awake()
     {
         data = GetComponent<EnemyData>();
-        wayPoints = data.patrolWayPoints.GetComponentsInChildren<Transform>();
+        updateWayPoints();
         playerObject = GameObject.FindGameObjectWithTag("Player");
         anim = GetComponent<Animator>();
         TargetPosition = wayPoints[currentTarget];
         //MoveToTarget();
         lastTarget = wayPoints.Length - 1;
         print(wayPoints.Length);
-        foreach(Transform t in wayPoints)
-        { print(t.name); }
+        //foreach(Transform t in wayPoints)
+        //{ print(t.name); }
     }
+
+    public void updateWayPoints()
+    {
+        wayPoints = data.patrolWayPoints.GetComponentsInChildren<Transform>();
+    }
+
     //private void OnTriggerEnter(Collider other)
     //{
     //    Vector3 horizontalOthr = new Vector3(other.transform.position.x, 0, other.transform.position.z);
@@ -96,7 +102,7 @@ public class EnemyMove : MonoBehaviour
         }
     }
     void MoveToTarget()
-    {
+    {// this might be slow because recalculates the target waypoint at every "Update"
         GetComponent<NavMeshAgent>().isStopped = false;
         anim.SetInteger("State", 0);
 
@@ -111,16 +117,20 @@ public class EnemyMove : MonoBehaviour
         Vector3 horizontalSelf = new Vector3(transform.position.x, 0, transform.position.z);
         if (Vector3.Distance(horizontalOthr, horizontalSelf) < 4)
         {
-            currentTarget = Random.Range(0, wayPoints.Length);
+            //currentTarget = Random.Range(0, wayPoints.Length);
+            lastTarget = currentTarget;
+            currentTarget = (currentTarget + 1) % wayPoints.Length;
+            // qusto serve perché lo 0 appartiene al parent del percorso. Troveremo un modo per non metterlo
+            if (currentTarget == 0) currentTarget++;
             //TODO maybe it's better not random???
-            if (currentTarget == lastTarget)//|| wayPoints[currentTarget].tag != "EnemieTarget")
-            {
-                TryAgain();
-            }
-            else
-            {
-                StartCoroutine(Wait());
-            }
+            //if (currentTarget == lastTarget)//|| wayPoints[currentTarget].tag != "EnemieTarget")
+            //{
+            //    TryAgain();
+            //}
+            //else
+            //{
+            //    StartCoroutine(Wait());
+            //}
         }
     }
     void followPlayer()
@@ -130,4 +140,6 @@ public class EnemyMove : MonoBehaviour
         GetComponent<NavMeshAgent>().speed = runSpeed;
         GetComponent<NavMeshAgent>().destination = playerObject.transform.position;
     }
+
+
 }
