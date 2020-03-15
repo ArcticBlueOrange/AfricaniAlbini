@@ -10,7 +10,8 @@ public class CharController_Motor : MonoBehaviour {
     public float RunnigSpeed = 12.0f;
     public float JumpHeight = 8.0f;
     public bool flight = true,
-                noclip = true;
+                noclip = true,
+                mouseLock = false;
 
 	public float sensitivity = 30.0f;
 	public float WaterHeight = 15.5f;
@@ -87,7 +88,12 @@ public class CharController_Motor : MonoBehaviour {
             noclip = !noclip;
             collider.enabled = !noclip;
         }
-        
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.L))
+        {
+            mouseLock = !mouseLock;
+            print("mouseLock = " + mouseLock);
+        }
+
         /* rimuovo temp.
         if(Input.GetKeyDown(KeyCode.N))
         {
@@ -105,10 +111,10 @@ public class CharController_Motor : MonoBehaviour {
             }
         }/**/
 
-		moveFB = Input.GetAxis ("Horizontal") * speed;
+        moveFB = Input.GetAxis ("Horizontal") * speed;
 		moveLR = Input.GetAxis ("Vertical") * speed;
 
-        //if (!GetComponent<InventoryManager>().InventoryActive)
+        if (!GetComponent<InventoryManager>().InventoryActive && !mouseLock)
         {
     		rotX = Input.GetAxis ("Mouse X") * sensitivity;
 	    	rotY = Input.GetAxis ("Mouse Y") * sensitivity;
