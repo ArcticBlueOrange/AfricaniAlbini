@@ -26,17 +26,19 @@ public class EnemySight : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player");
         playerInventory = player.GetComponent<InventoryManager>();
         //playerAnim = player.GetComponent<Animator>();
+        //print("Sight active");
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject == player)
         {
+            //print("Player in area");
             playerInSight = false;
 
             Vector3 direction = other.transform.position - transform.position;
             float angle = Vector3.Angle(direction, transform.forward);
-
+            //print(angle);
             if (angle <= fieldOfViewAngle * .5f)
             {
                 RaycastHit hit;
@@ -50,8 +52,6 @@ public class EnemySight : MonoBehaviour
                     }
                 }
             }
-
-
         }
     }
 
