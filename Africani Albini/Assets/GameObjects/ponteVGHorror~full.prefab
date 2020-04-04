@@ -72,8 +72,8 @@ GameObject:
   m_Name: base dx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &6645796149304035125
 Transform:
@@ -167,8 +167,8 @@ GameObject:
   m_Name: arc dx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &187130187888873644
 Transform:
@@ -260,8 +260,8 @@ GameObject:
   m_Name: mobile sx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &3635149844159058470
 Transform:
@@ -276,7 +276,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4428666723742332920}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 89.98021, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 89.98022, y: 0, z: 0}
 --- !u!33 &908104980574441452
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -355,8 +355,8 @@ GameObject:
   m_Name: mobile dx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &8055006391852417371
 Transform:
@@ -371,7 +371,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 4428666723742332920}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 89.98021, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 89.98022, y: 0, z: 0}
 --- !u!33 &2878864321899680917
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -450,8 +450,8 @@ GameObject:
   m_Name: arc sx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &1261723667096817558
 Transform:
@@ -543,8 +543,8 @@ GameObject:
   m_Name: base sx
   m_TagString: Untagged
   m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_NavMeshLayer: 1
+  m_StaticEditorFlags: 8
   m_IsActive: 1
 --- !u!4 &3709471965532968073
 Transform:

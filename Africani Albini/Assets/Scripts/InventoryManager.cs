@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,17 +13,19 @@ public class InventoryManager : MonoBehaviour
                  playerEnergy = 100;
 
     public Canvas InventoryMenu;
-    public bool InventoryActive = false;
+    public bool InventoryActive = true;
     public List<GameObject> objects;
     public List<GameObject> uiObjects;
     public float menuObjectsOffset = -25;
     public GameObject objectButton;
     public GameObject selectionArea;
     [SerializeField] private int selection = -1;
+    CharacterData data;
     //public int Selection { get => selection; set => selection = value % objects.Count; }
     void Start()
     {
         //TODO MOVE COMMANDS RELATED TO INVENTORY MENU TO A SEPARATE SCRIPT
+        data = GetComponent<CharacterData>();
         InventoryMenu.transform.Find("_GUI").gameObject.SetActive(true);
         InventoryMenu.transform.Find("_INVENTORY").gameObject.SetActive(false);
         objects = new List<GameObject>();
@@ -48,8 +51,8 @@ public class InventoryManager : MonoBehaviour
                 InventoryMenu.transform.Find("_GUI").gameObject.SetActive(true);
                 InventoryMenu.transform.Find("_INVENTORY").gameObject.SetActive(false);
                 InventoryActive = false;
-                //Cursor.visible = false; //fastidioso al momento
-                //Cursor.lockState = CursorLockMode.Locked; //fastidioso al momento
+                Cursor.visible = false; //fastidioso al momento
+                Cursor.lockState = CursorLockMode.Locked; //fastidioso al momento
                 Time.timeScale = 1f;
             }
         }
@@ -61,7 +64,7 @@ public class InventoryManager : MonoBehaviour
                 unSelectObject();
                 //selection = ;
                 selectObject( (selection + 1) % objects.Count ) ;
-                //print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().name);
+                //print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().objectName);
             }
             if (Input.GetAxisRaw("Mouse ScrollWheel") < 0)
             {
@@ -70,21 +73,12 @@ public class InventoryManager : MonoBehaviour
                 // quanto fa (0 - 1) % 2 ????? nada
                 //selection = selection == 0 ? objects.Count - 1 : (selection - 1) ;
                 selectObject( selection == 0 ? objects.Count - 1 : (selection - 1) );
-                //print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().name);
+                //print("Selected " + selection + objects[selection].GetComponent<InventoryObject>().objectName);
             }
             if (Input.GetKeyDown(KeyCode.Mouse1)) //drop
             {
-                print("Dropping obj");
-                GameObject obj = objects[selection];
-                InventoryObject inv = obj.GetComponent<InventoryObject>();
-                inv.dropObject();
-                objects.RemoveAt(selection);
-                obj.transform.position = transform.position + transform.forward * 2;
-                selectObject( selection >= objects.Count ? objects.Count - 1 : selection );
-                //selection = selection >= objects.Count ? objects.Count - 1 : selection;
-                //unSelectObject();
-                //obj.SetActive(true);
-                //obj = objects[selection];
+                dropSelectedObject();
+
             }
 
             if (Input.GetKeyDown(KeyCode.Q)) //unequip everything
@@ -95,12 +89,30 @@ public class InventoryManager : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.Mouse0)) // use
             {
-                GameObject obj = objects[selection];
-                InventoryObject inv = obj.GetComponent<InventoryObject>();
-                //print("Using " + inv.name);
-                inv.useObject();
+                if (selection >= 0)
+                {
+                    GameObject obj = objects[selection];
+                    InventoryObject inv = obj.GetComponent<InventoryObject>();
+                    //print("Using " + inv.objectName);
+                    inv.useObject();
+                }
             }
         }
+    }
+
+    public void dropSelectedObject()
+    {
+        print("Dropping obj");
+        GameObject obj = objects[selection];
+        InventoryObject inv = obj.GetComponent<InventoryObject>();
+        inv.dropObject();
+        objects.RemoveAt(selection);
+        obj.transform.position = transform.position + transform.forward * 2;
+        selectObject(selection >= objects.Count ? objects.Count - 1 : selection);
+        //selection = selection >= objects.Count ? objects.Count - 1 : selection;
+        //unSelectObject();
+        //obj.SetActive(true);
+        //obj = objects[selection];
     }
 
     void OnTriggerStay(Collider other)
@@ -109,19 +121,69 @@ public class InventoryManager : MonoBehaviour
         {
             //Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), other);
             GameObject obj = other.gameObject;
-            InventoryObject inv = other.GetComponent<InventoryObject>();
-            if (Input.GetKeyDown(KeyCode.E) && inv.pickable)
+            InventoryObject inv = obj.GetComponent<InventoryObject>();
+            //print("Pickable object:" + other.GetComponent<InventoryObject>().objectName);
+            RaycastHit hit;
+            Ray ray = data.control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(ray, out hit))//
             {
-                objects.Add(obj);
-                obj.SetActive(false);
-                //GameObject.Destroy(obj.gameObject);
-                unSelectObject();
-                selectObject(objects.Count - 1);
-                print("Picked " + selection + inv.name);
-                if (InventoryActive) refreshUI();
+                //print("Pressing button E:" + other.GetComponent<InventoryObject>().objectName);
+
+                if (hit.collider.gameObject == obj)
+                {
+                    //print("Mouse hit " + hit.collider.objectName + " vs " + obj.objectName);
+                    if (Input.GetKeyDown(KeyCode.E) && inv.pickable)
+                    { // 5 graffe per determinare se posso raccogliere un oggetto??? FuckOff
+                        //print("Taking");
+                        objects.Add(obj);
+                        obj.SetActive(false);
+                        //GameObject.Destroy(obj.gameObject);
+                        unSelectObject();
+                        selectObject(objects.Count - 1);
+                        print("Picked " + selection + inv.objectName);
+                        if (InventoryActive) refreshUI();
+                    }
+                    if (Input.GetKeyDown(KeyCode.Mouse0) && selection <0 && !inv.pickable)
+                    {
+                        //print("using " + inv.objectName);
+                        inv.useObject();
+                    }
+                }
             }
         }
     }
+    /*
+     *     void OnTriggerStay(Collider other)
+    {
+        if (other.GetComponent<InventoryObject>() ) //per ora seleziona tutti gli oggetti nelle vicinanze
+        {
+            //Physics.IgnoreCollision(gameObject.GetComponent<Collider>(), other);
+            GameObject obj = other.gameObject;
+            InventoryObject inv = obj.GetComponent<InventoryObject>();
+            //print("Pickable object:" + other.GetComponent<InventoryObject>().objectName);
+            if (Input.GetKeyDown(KeyCode.E) && inv.pickable)
+            {
+                //print("Pressing button E:" + other.GetComponent<InventoryObject>().objectName);
+                RaycastHit hit;
+                Ray ray = data.control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out hit))
+                {
+                    //print("Mouse hit " + hit.collider.objectName + " vs " + obj.objectName);
+                    if (hit.collider.gameObject == obj )
+                    { // 5 graffe per determinare se posso raccogliere un oggetto??? FuckOff
+                        //print("Taking");
+                        objects.Add(obj);
+                        obj.SetActive(false);
+                        //GameObject.Destroy(obj.gameObject);
+                        unSelectObject();
+                        selectObject(objects.Count - 1);
+                        print("Picked " + selection + inv.objectName);
+                        if (InventoryActive) refreshUI();
+                    }
+                }
+            }
+        }
+    } /**/
 
     public void selectObject(int i)
     {
@@ -132,7 +194,7 @@ public class InventoryManager : MonoBehaviour
         if (selection >= 0)
         {
             InventoryObject inv = objects[selection].GetComponent<InventoryObject>();
-            print("Selected " + selection + inv.name);
+            print("Selected " + selection + inv.objectName);
             inv.equipObject();
             if (!InventoryActive)
             {
@@ -147,7 +209,7 @@ public class InventoryManager : MonoBehaviour
         if (selection >= 0 && objects.Count > 0)
         {
             InventoryObject inv = objects[selection].GetComponent<InventoryObject>();
-            print("Unselected " + selection + inv.name);
+            print("Unselected " + selection + inv.objectName);
             inv.unEquipObject();
         } else { print("Empty bag"); }
         //if (InventoryActive) refreshUI();
@@ -170,7 +232,7 @@ public class InventoryManager : MonoBehaviour
         //list of objects
         foreach(GameObject obj in objects)
         {
-            GameObject uiobj = Object.Instantiate(objectButton);
+            GameObject uiobj = UnityEngine.Object.Instantiate(objectButton);
             uiobj.transform.SetParent(objectButton.transform.parent);
             
             uiobj.transform.position = objectButton.transform.position;
@@ -178,7 +240,7 @@ public class InventoryManager : MonoBehaviour
 
             uiobj.gameObject.SetActive(true);
             //uiobj.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>() = obj.GetComponent<InventoryObject>().icon;
-            uiobj.transform.Find("Clickable").GetComponent<TMPro.TextMeshProUGUI>().text = "- " + count + obj.GetComponent<InventoryObject>().name;
+            uiobj.transform.Find("Clickable").GetComponent<TMPro.TextMeshProUGUI>().text = "- " + count + obj.GetComponent<InventoryObject>().objectName;
             uiobj.transform.Find("Icon").GetComponent<UnityEngine.UI.Image>().sprite = obj.GetComponent<InventoryObject>().icon;
             uiobj.transform.Find("Clickable").GetComponent<UnityEngine.UI.Button>().onClick.AddListener(delegate {
                 unSelectObject();
@@ -196,7 +258,7 @@ public class InventoryManager : MonoBehaviour
             GameObject obj = objects[selection];
             InventoryObject inv = obj.GetComponent<InventoryObject>();
             selectionArea.SetActive(true);
-            selectionArea.transform.Find("SelectionName").GetComponent<TMPro.TextMeshProUGUI>().text = inv.name;
+            selectionArea.transform.Find("SelectionName").GetComponent<TMPro.TextMeshProUGUI>().text = inv.objectName;
             selectionArea.transform.Find("SelectionDescription").GetComponent<TMPro.TextMeshProUGUI>().text = inv.description;
             selectionArea.transform.Find("SelectionIcon").GetComponent<UnityEngine.UI.Image>().sprite = inv.icon;
             //selectionArea.transform.Find("Canvas").GetComponent<Canvas>.

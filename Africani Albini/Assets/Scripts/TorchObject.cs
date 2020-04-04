@@ -11,12 +11,13 @@ public class TorchObject : InventoryObject
     //public string description;
     //public GameObject playerObject;
     //public Sprite icon;
-    public bool active = false;
+    public bool active;// = false;
     
     private void Start()
     {
         playerObject = GameObject.FindGameObjectWithTag("Player");
         rb = GetComponent<Rigidbody>();
+        active = false;
         //print("A torch is born");
         //Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>());
     }
@@ -24,13 +25,15 @@ public class TorchObject : InventoryObject
     private void Update()
     {
         ////print("A torch is ALIVE");
-        if (equip)
-            {
-                transform.position = playerObject.transform.position + playerObject.transform.forward * 2;
-                Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>(), true);
-            //transform.GetComponent<Collider>();
-            //transform.GetComponent<>
-        }   
+        //if (equip)
+        //{
+        //    transform.position = playerObject.transform.position + playerObject.transform.forward * 2;
+        //    transform.rotation = playerObject.transform.rotation;
+        //    Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>(), true);
+        //    //transform.GetComponent<Collider>();
+        //    //transform.GetComponent<>
+        //}   
+        ownedCoordinates();
     }
 
     public override void useObject()

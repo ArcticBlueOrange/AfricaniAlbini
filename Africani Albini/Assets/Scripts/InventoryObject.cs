@@ -6,9 +6,8 @@ public class InventoryObject : MonoBehaviour
 {
     public bool pickable = true;
     public float weight = 1;
-    public string name = "Phone";
-    [TextArea]
-    public string description;
+    public string objectName = "Phone";
+    [TextArea] public string description;
     public GameObject playerObject;
     public Sprite icon;
     public bool equip = false;
@@ -23,14 +22,7 @@ public class InventoryObject : MonoBehaviour
 
     private void Update()
     {
-        if (equip)
-        {
-            transform.position = playerObject.transform.position + playerObject.transform.forward * 2;
-            Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>(), true);
-            
-            //transform.GetComponent<Collider>();
-            //transform.GetComponent<>
-        }
+        ownedCoordinates();
     }
 
     //these methods need override partially or totally by child classes
@@ -64,7 +56,6 @@ public class InventoryObject : MonoBehaviour
     public virtual void dropObject()
     {
         Debug.Log("Dropping " + name);
-        //GetComponent<Collider>().enabled = true;
         equip = false;
         pickable = true;
         transform.Find("Mesh").gameObject.SetActive(true);
@@ -76,6 +67,17 @@ public class InventoryObject : MonoBehaviour
     void setColliders(bool val)
     {
         Collider[] colls = GetComponents<Collider>();
-        foreach (Collider coll in colls) { coll.enabled = val; print("Collider " + coll + " set to " + val); }
+        foreach (Collider coll in colls) { coll.enabled = val; /*print("Collider " + coll + " set to " + val);/**/ }
     }
+
+    protected void ownedCoordinates()
+    {
+        if (equip )//&& gameObject.activeSelf)
+        { //TODO need to make more realistic
+            transform.position = playerObject.transform.position + playerObject.transform.forward * 2;
+            transform.rotation = playerObject.transform.rotation;
+            Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>(), true);
+        }
+    }
+
 }

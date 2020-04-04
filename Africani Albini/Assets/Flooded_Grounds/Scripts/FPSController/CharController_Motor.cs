@@ -17,10 +17,12 @@ public class CharController_Motor : MonoBehaviour {
 	public float WaterHeight = 15.5f;
 	CharacterController character;
     CapsuleCollider collider;
-
-	private GameObject cam;
+    public GameObject cam;
     public GameObject cam1;
     public GameObject cam2;
+
+
+
 
     private bool NightVision = false;
     float moveFB, moveLR;
@@ -28,22 +30,23 @@ public class CharController_Motor : MonoBehaviour {
 	public bool webGLRightClickRotation = true;
 	float gravity = -9.8f;
     Vector3 movement;
+    CharacterData data;
 
-
-	void Start(){
+    void Start(){
 		//LockCursor ();
 		character = GetComponent<CharacterController> ();
         collider = GetComponent<CapsuleCollider>();
-		if (Application.isEditor) {
-			webGLRightClickRotation = false;
-			sensitivity = sensitivity * 1.5f;
-            Cursor.visible = false;
-            speed = WalkSpeed;
-            cam = cam1;
-            cam2.gameObject.SetActive(false);
-		}
+		//if (Application.isEditor) {
+		webGLRightClickRotation = false;
+		sensitivity = sensitivity * 1.5f;
+        Cursor.visible = false;
+        speed = WalkSpeed;
+        cam = cam1;
+        cam2.SetActive(false);
+        //}
         movement = new Vector3(0, 0, 0);
-	}
+        data = GetComponent<CharacterData>();
+    }
 
 
 	void CheckForWaterHeight(){
@@ -56,8 +59,8 @@ public class CharController_Motor : MonoBehaviour {
 
 
 
-    void Update() {
-
+    void Update()
+    {
         if (Input.GetButton("Run"))
         {
             speed = RunnigSpeed;
@@ -114,7 +117,7 @@ public class CharController_Motor : MonoBehaviour {
         moveFB = Input.GetAxis ("Horizontal") * speed;
 		moveLR = Input.GetAxis ("Vertical") * speed;
 
-        if (!GetComponent<InventoryManager>().InventoryActive && !mouseLock)
+        if (!mouseLock) //data.inventory.InventoryActive && 
         {
     		rotX = Input.GetAxis ("Mouse X") * sensitivity;
 	    	rotY = Input.GetAxis ("Mouse Y") * sensitivity;
@@ -129,8 +132,6 @@ public class CharController_Motor : MonoBehaviour {
         movement.z = moveLR;
 		//Vector3 movement = new Vector3 (moveFB, verticalMovement, moveLR);
 
-
-
 		if (webGLRightClickRotation) {
 			if (Input.GetKey (KeyCode.Mouse0)) {
 				CameraRotation (cam, rotX, rotY);
@@ -143,13 +144,8 @@ public class CharController_Motor : MonoBehaviour {
 		character.Move (movement * Time.deltaTime);
 	}
 
-
 	void CameraRotation(GameObject cam, float rotX, float rotY){		
 		transform.Rotate (0, rotX * Time.deltaTime, 0);
 		cam.transform.Rotate (-rotY * Time.deltaTime, 0, 0);
 	}
-
-
-
-
 }
