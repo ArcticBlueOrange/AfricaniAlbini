@@ -51,8 +51,8 @@ public class InventoryManager : MonoBehaviour
                 InventoryMenu.transform.Find("_GUI").gameObject.SetActive(true);
                 InventoryMenu.transform.Find("_INVENTORY").gameObject.SetActive(false);
                 InventoryActive = false;
-                Cursor.visible = false; //fastidioso al momento
-                Cursor.lockState = CursorLockMode.Locked; //fastidioso al momento
+                //Cursor.visible = false; //fastidioso al momento
+                //Cursor.lockState = CursorLockMode.Locked; //fastidioso al momento
                 Time.timeScale = 1f;
             }
         }

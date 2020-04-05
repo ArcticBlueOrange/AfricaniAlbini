@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Padlock_Object : InventoryObject
-{
+{ //TODO create a new class MiniGameObject and derive from there instead
     public int[] state;
-    public GameObject[] gears;
+    public GameObject[] gears; //gears in the GUI model
     public GameObject pivot;
     public int[] correctCombination;
-    public float rotationSpeed = 10;
+    public float rotationSpeed = 100;
     public bool[] triggers;
+    public Transform minigameCanvas;
+    public bool playingMinigame = false;
     void Start()
     {
         pickable = false;
@@ -18,28 +20,31 @@ public class Padlock_Object : InventoryObject
         rb = GetComponent<Rigidbody>();
         state = new int[3] { 0, 0, 0 };
         correctCombination = new int[3] { 6, 6, 6 };
+        minigameCanvas = transform.Find("MiniGameCanvas");//GetComponent<Canvas>();
+        triggers = new bool[3] { false, false, false};
         gears = new GameObject[3];
-        gears[0] = transform.Find("Mesh").transform.Find("Tambour 0").gameObject;
-        gears[1] = transform.Find("Mesh").transform.Find("Tambour 1").gameObject;
-        gears[2] = transform.Find("Mesh").transform.Find("Tambour 2").gameObject;
-        pivot = transform.Find("Mesh").transform.Find("Pivot").gameObject;
-        triggers = new bool[3] { false, false, false };
+        gears[0] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 0").gameObject;
+        gears[1] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 1").gameObject;
+        gears[2] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 2").gameObject;
+        pivot = minigameCanvas.Find("Minigame_Padlock").transform.Find("Pivot").gameObject;
+        triggers = new bool[3] { false, false, false }; //use for debugging purpose
         //StartCoroutine(rotateGear(0));
+        
     }
 
     void Update()
     {
-        if (triggers[0])
+        if (triggers[0] && playingMinigame)
         {
             triggers[0] = false;
             StartCoroutine(rotateGear(0));
         }
-        if (triggers[1])
+        if (triggers[1] && playingMinigame)
         {
             triggers[1] = false;
             StartCoroutine(rotateGear(1));
         }
-        if (triggers[2])
+        if (triggers[2] && playingMinigame)
         {
             triggers[2] = false;
             StartCoroutine(rotateGear(2));
@@ -49,7 +54,6 @@ public class Padlock_Object : InventoryObject
     IEnumerator rotateGear(int gear)
     {
         if (gear < 0 || gear > 2) throw new MissingComponentException("wrong gear");
-        state[gear] = (state[gear] + 1) % 10;
         // rotate gear
         //float objectiveRotation = (gears[gear].transform.localRotation.eulerAngles.y - 36) % 360;
         //float objectiveRotation = (gears[gear].transform.localRotation.eulerAngles.y + 360 - 36);// % 360;
@@ -57,11 +61,27 @@ public class Padlock_Object : InventoryObject
               rot = 0;
         while (rot < objectiveRotation)
         {
-            gears[gear].transform.RotateAround(pivot.transform.position, Vector3.down, rotationSpeed * Time.deltaTime);
+            gears[gear].transform.RotateAround(pivot.transform.position, pivot.transform.forward, rotationSpeed * Time.deltaTime);
             rot += rotationSpeed * Time.deltaTime;
             yield return null;
         }
+        state[gear] = (state[gear] + 1) % 10;
+        updateUICode();
         //print(state[gear]);
+    }
+
+    void changeState()
+    {
+        playingMinigame = !playingMinigame;
+        if (playingMinigame)
+        {
+            minigameCanvas.gameObject.SetActive(false);
+            playerObject.GetComponent<CharacterData>().control.mouseLock = true;
+        } else
+        {
+            minigameCanvas.gameObject.SetActive(true);
+            playerObject.GetComponent<CharacterData>().control.mouseLock = false;
+        }
     }
 
     bool checkCombination()
@@ -72,6 +92,17 @@ public class Padlock_Object : InventoryObject
         }
         print("Combination correct");
         return true;
+    }
+
+    void updateUICode()
+    {
+        Transform UICODE = minigameCanvas.Find("UI_Code");
+        TMPro.TextMeshProUGUI text = UICODE.GetComponent<TMPro.TextMeshProUGUI>();
+        string newtext = string.Format("{0}:{1}:{2}", state[0], state[1], state[2]);
+        print(newtext);
+        print(UICODE);
+        print(text);
+        text.text = newtext; 
     }
 
     public override void useObject()

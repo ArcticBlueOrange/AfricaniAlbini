@@ -39,7 +39,7 @@ public class CharController_Motor : MonoBehaviour {
 		//if (Application.isEditor) {
 		webGLRightClickRotation = false;
 		sensitivity = sensitivity * 1.5f;
-        Cursor.visible = false;
+        //Cursor.visible = false; //todo need a special script for dealing with cursor stuff?
         speed = WalkSpeed;
         cam = cam1;
         cam2.SetActive(false);
@@ -94,7 +94,7 @@ public class CharController_Motor : MonoBehaviour {
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.L))
         {
             mouseLock = !mouseLock;
-            print("mouseLock = " + mouseLock);
+            //print("mouseLock = " + mouseLock);
         }
 
         /* rimuovo temp.
