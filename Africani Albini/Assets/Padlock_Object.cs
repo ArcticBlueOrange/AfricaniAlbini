@@ -8,14 +8,15 @@ public class Padlock_Object : InventoryObject
     public GameObject[] gears; //gears in the GUI model
     public GameObject pivot;
     public int[] correctCombination;
-    public float rotationSpeed = 100;
+    public float rotationSpeed = 500f;
     public bool[] triggers;
     public Transform minigameCanvas;
-    public bool playingMinigame = false;
+    CharacterData playerData;
     void Start()
     {
         pickable = false;
         playerObject = GameObject.FindGameObjectWithTag("Player");
+        playerData = playerObject.GetComponent<CharacterData>();
         Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>());
         rb = GetComponent<Rigidbody>();
         state = new int[3] { 0, 0, 0 };
@@ -27,6 +28,7 @@ public class Padlock_Object : InventoryObject
         gears[1] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 1").gameObject;
         gears[2] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 2").gameObject;
         pivot = minigameCanvas.Find("Minigame_Padlock").transform.Find("Pivot").gameObject;
+        minigameCanvas.gameObject.SetActive(false);
         triggers = new bool[3] { false, false, false }; //use for debugging purpose
         //StartCoroutine(rotateGear(0));
         
@@ -34,17 +36,18 @@ public class Padlock_Object : InventoryObject
 
     void Update()
     {
-        if (triggers[0] && playingMinigame)
+        
+        if (triggers[0] && playerData.playingMinigame)
         {
             triggers[0] = false;
             StartCoroutine(rotateGear(0));
         }
-        if (triggers[1] && playingMinigame)
+        if (triggers[1] && playerData.playingMinigame)
         {
             triggers[1] = false;
             StartCoroutine(rotateGear(1));
         }
-        if (triggers[2] && playingMinigame)
+        if (triggers[2] && playerData.playingMinigame)
         {
             triggers[2] = false;
             StartCoroutine(rotateGear(2));
@@ -72,16 +75,24 @@ public class Padlock_Object : InventoryObject
 
     void changeState()
     {
-        playingMinigame = !playingMinigame;
-        if (playingMinigame)
-        {
-            minigameCanvas.gameObject.SetActive(false);
-            playerObject.GetComponent<CharacterData>().control.mouseLock = true;
-        } else
+        playerData.playingMinigame = !playerData.playingMinigame;
+        CharController_Look look = playerObject.GetComponent<CharacterData>().look;
+        if (playerData.playingMinigame)
         {
             minigameCanvas.gameObject.SetActive(true);
-            playerObject.GetComponent<CharacterData>().control.mouseLock = false;
+            look.LockMouse(true);
+        } else
+        {
+            minigameCanvas.gameObject.SetActive(false);
+            look.LockMouse(false);
+
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "Player" && playerData.playingMinigame)
+            changeState();
     }
 
     bool checkCombination()
@@ -107,29 +118,30 @@ public class Padlock_Object : InventoryObject
 
     public override void useObject()
     {
-        // point raycast from camera of player
-        Ray ray = playerObject.GetComponent<CharacterData>().control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-        int layermask = (1 << 11);//~
-        // if (Physics.Raycast(ray, out RaycastHit hit, layermask)) //not working uh?
-        RaycastHit[] hits = Physics.RaycastAll(ray, 10f);//, layermask);
-        foreach(RaycastHit hit in hits)
-        {// check if ray hits any of the three gears
-            // tried changing layer where gears are set, didn't work
-            print("Hit " + hit.collider.transform.name);
-            // looks inefficient. comunque non funziona
-            for (int i = 0; i < gears.Length; i++)
-            {
-                GameObject gear = gears[i];
-                if (hit.collider.gameObject == gear.gameObject)
-                {
-                    //print("Hit " + i);
-                    StartCoroutine(rotateGear(i));
-                }
-            }
-            // if so, rotate it
-            // otherwise, do'na sega
-            /// ^ questo già lo fa
-        }
+        changeState();
+        //// point raycast from camera of player
+        //Ray ray = playerObject.GetComponent<CharacterData>().control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+        //int layermask = (1 << 11);//~
+        //// if (Physics.Raycast(ray, out RaycastHit hit, layermask)) //not working uh?
+        //RaycastHit[] hits = Physics.RaycastAll(ray, 10f);//, layermask);
+        //foreach(RaycastHit hit in hits)
+        //{// check if ray hits any of the three gears
+        //    // tried changing layer where gears are set, didn't work
+        //    print("Hit " + hit.collider.transform.name);
+        //    // looks inefficient. comunque non funziona
+        //    for (int i = 0; i < gears.Length; i++)
+        //    {
+        //        GameObject gear = gears[i];
+        //        if (hit.collider.gameObject == gear.gameObject)
+        //        {
+        //            //print("Hit " + i);
+        //            StartCoroutine(rotateGear(i));
+        //        }
+        //    }
+        //    // if so, rotate it
+        //    // otherwise, do'na sega
+        //    /// ^ questo già lo fa
+        //}
 
         // // perform animation
         // print("TODO Animazione Badile");

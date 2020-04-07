@@ -5,29 +5,21 @@ using UnityEngine;
 public class CharController_Motor : MonoBehaviour {
 
 	private float speed = 10.0f;
-
     public float WalkSpeed = 7.0f;
     public float RunnigSpeed = 12.0f;
     public float JumpHeight = 8.0f;
     public bool flight = true,
-                noclip = true,
-                mouseLock = false;
-
-	public float sensitivity = 30.0f;
+                noclip = true;/*,
+                mouseLock = false;*/
 	public float WaterHeight = 15.5f;
 	CharacterController character;
     CapsuleCollider collider;
     public GameObject cam;
     public GameObject cam1;
     public GameObject cam2;
-
-
-
-
     private bool NightVision = false;
     float moveFB, moveLR;
-	float rotX, rotY;
-	public bool webGLRightClickRotation = true;
+	
 	float gravity = -9.8f;
     Vector3 movement;
     CharacterData data;
@@ -37,9 +29,8 @@ public class CharController_Motor : MonoBehaviour {
 		character = GetComponent<CharacterController> ();
         collider = GetComponent<CapsuleCollider>();
 		//if (Application.isEditor) {
-		webGLRightClickRotation = false;
-		sensitivity = sensitivity * 1.5f;
-        //Cursor.visible = false; //todo need a special script for dealing with cursor stuff?
+		//sensitivity = sensitivity * 1.5f;
+        //; //todo need a special script for dealing with cursor stuff?
         speed = WalkSpeed;
         cam = cam1;
         cam2.SetActive(false);
@@ -48,7 +39,6 @@ public class CharController_Motor : MonoBehaviour {
         data = GetComponent<CharacterData>();
     }
 
-
 	void CheckForWaterHeight(){
 		if (transform.position.y < WaterHeight) {
 			gravity = 0f;			
@@ -56,8 +46,6 @@ public class CharController_Motor : MonoBehaviour {
 			gravity = -9.8f;
 		}
 	}
-
-
 
     void Update()
     {
@@ -83,7 +71,6 @@ public class CharController_Motor : MonoBehaviour {
         }
         else movement.y += gravity * Time.deltaTime;
 
-
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.G)) flight = !flight;
 
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.N))
@@ -93,8 +80,7 @@ public class CharController_Motor : MonoBehaviour {
         }
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.L))
         {
-            mouseLock = !mouseLock;
-            //print("mouseLock = " + mouseLock);
+            data.look.LockMouse();
         }
 
         /* rimuovo temp.
@@ -117,35 +103,13 @@ public class CharController_Motor : MonoBehaviour {
         moveFB = Input.GetAxis ("Horizontal") * speed;
 		moveLR = Input.GetAxis ("Vertical") * speed;
 
-        if (!mouseLock) //data.inventory.InventoryActive && 
-        {
-    		rotX = Input.GetAxis ("Mouse X") * sensitivity;
-	    	rotY = Input.GetAxis ("Mouse Y") * sensitivity;
-        }
-
-		//rotX = Input.GetKey (KeyCode.Joystick1Button4);
-		//rotY = Input.GetKey (KeyCode.Joystick1Button5);
-
-		CheckForWaterHeight ();
+		CheckForWaterHeight();
 
         movement.x = moveFB;
         movement.z = moveLR;
-		//Vector3 movement = new Vector3 (moveFB, verticalMovement, moveLR);
-
-		if (webGLRightClickRotation) {
-			if (Input.GetKey (KeyCode.Mouse0)) {
-				CameraRotation (cam, rotX, rotY);
-			}
-		} else if (!webGLRightClickRotation) {
-			CameraRotation (cam, rotX, rotY);
-		}
 
 		movement = transform.rotation * movement;
 		character.Move (movement * Time.deltaTime);
 	}
 
-	void CameraRotation(GameObject cam, float rotX, float rotY){		
-		transform.Rotate (0, rotX * Time.deltaTime, 0);
-		cam.transform.Rotate (-rotY * Time.deltaTime, 0, 0);
-	}
 }

@@ -30,25 +30,19 @@ public class PalaObject : InventoryObject
     {
         // perform animation
         print("TODO Animazione Badile");
-        // chck if object "zolladiterra" in front" e vicìn
-        Ray ray = playerObject.GetComponent<CharacterData>().control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            print(hit.transform.gameObject.name + ", " + hit.distance);
-            if (hit.transform.gameObject.GetComponent<InventoryObject>() && hit.distance <= 10)
-            {
-                InventoryObject io = hit.transform.gameObject.GetComponent<InventoryObject>();
-                if (io.objectName == "Zolla di Terra")
-                {
-                    print("Scavando...");
-                    io.useObject();
-                    StartCoroutine(DestroyAfterEndZolla(hit.transform.gameObject));
-                }
-            }
-        }
-        //  if so, destroy both zolla and pala
-        //  otherwise, do 'na sega
+
     }
+    public override void useObject(InventoryObject oth)
+    {
+        print("TODO Animazione Badile");
+        if (oth.objectName == "Zolla di Terra")
+        {
+            print("Scavando...");
+            //io.useObject(GetComponent<PalaObject>());
+            StartCoroutine(DestroyAfterEndZolla(oth.transform.gameObject));
+        }
+    }
+
 
     IEnumerator DestroyAfterEndZolla(GameObject zolla)
     {

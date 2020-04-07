@@ -31,6 +31,11 @@ public class InventoryObject : MonoBehaviour
         print("(virtual) Using " + name);
     }
 
+    public virtual void useObject(InventoryObject other)
+    {
+        print("(virtual) Using " + objectName + " with " + other.objectName);
+    }
+
     public virtual void equipObject()
     {
         print("(virtual) Equipping " + name);

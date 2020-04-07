@@ -18,8 +18,17 @@ public class ZollaObject : InventoryObject
 
     public override void useObject()
     {
-        anim.SetTrigger("Scava");
-        StartCoroutine(destroyAfterAnim());
+        print("Nothing happens");
+        //anim.SetTrigger("Scava");
+        //StartCoroutine(destroyAfterAnim());
+    }
+    public override void useObject(InventoryObject obj)
+    {
+        if (obj.objectName == "Badile")
+        {
+            anim.SetTrigger("Scava");
+            StartCoroutine(destroyAfterAnim());
+        }
     }
 
     IEnumerator destroyAfterAnim()
