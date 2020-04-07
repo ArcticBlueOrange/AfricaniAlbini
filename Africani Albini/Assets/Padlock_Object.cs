@@ -6,7 +6,8 @@ public class Padlock_Object : InventoryObject
 { //TODO create a new class MiniGameObject and derive from there instead
     public int[] state;
     public GameObject[] gears; //gears in the GUI model
-    public GameObject pivot;
+    public GameObject verr; //piece to open
+    public GameObject pivot; //rotation of gears
     public int[] correctCombination;
     public float rotationSpeed = 500f;
     public bool[] triggers;
@@ -27,6 +28,7 @@ public class Padlock_Object : InventoryObject
         gears[0] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 0").gameObject;
         gears[1] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 1").gameObject;
         gears[2] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 2").gameObject;
+        verr = minigameCanvas.Find("Minigame_Padlock").transform.Find("Verrou").gameObject;
         pivot = minigameCanvas.Find("Minigame_Padlock").transform.Find("Pivot").gameObject;
         minigameCanvas.gameObject.SetActive(false);
         triggers = new bool[3] { false, false, false }; //use for debugging purpose
@@ -37,20 +39,48 @@ public class Padlock_Object : InventoryObject
     void Update()
     {
         
-        if (triggers[0] && playerData.playingMinigame)
+        //if (triggers[0] && playerData.playingMinigame)
+        //{
+        //    triggers[0] = false;
+        //    StartCoroutine(rotateGear(0));
+        //}
+        //if (triggers[1] && playerData.playingMinigame)
+        //{
+        //    triggers[1] = false;
+        //    StartCoroutine(rotateGear(1));
+        //}
+        //if (triggers[2] && playerData.playingMinigame)
+        //{
+        //    triggers[2] = false;
+        //    StartCoroutine(rotateGear(2));
+        //}
+
+        if (playerData.playingMinigame)
         {
-            triggers[0] = false;
-            StartCoroutine(rotateGear(0));
-        }
-        if (triggers[1] && playerData.playingMinigame)
-        {
-            triggers[1] = false;
-            StartCoroutine(rotateGear(1));
-        }
-        if (triggers[2] && playerData.playingMinigame)
-        {
-            triggers[2] = false;
-            StartCoroutine(rotateGear(2));
+            if (Input.GetKeyDown(KeyCode.Mouse0))
+            {
+                //Generate raycast from mouse to canvas
+                Ray ray = playerData.control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                int layer = 5;
+                if (Physics.Raycast(ray, out RaycastHit hit, layer))
+                {
+                    // check if hits a gear
+                    //print(hit);
+                    //print(hit.transform);
+                    //print(hit.transform.gameObject);
+                    //print(hit.transform.gameObject.name);
+                    //print(hit.transform.gameObject.name == "Tambour 0");
+                    //print(hit.transform.gameObject.name == "Tambour 1");
+                    //print(hit.transform.gameObject.name == "Tambour 2");
+                    //print(hit.transform.gameObject.name == "Verrou");
+                    // print(hit);
+                    if (hit.transform.gameObject.name == "Tambour 0") { StartCoroutine(rotateGear(0)); }
+                    if (hit.transform.gameObject.name == "Tambour 1") { StartCoroutine(rotateGear(1)); }
+                    if (hit.transform.gameObject.name == "Tambour 2") { StartCoroutine(rotateGear(2)); }
+                    if (hit.transform.gameObject.name == "Verrou") { StartCoroutine(tryToOpen()); }
+                    // if so rotate it
+                }
+            }
         }
     }
 
@@ -73,6 +103,49 @@ public class Padlock_Object : InventoryObject
         //print(state[gear]);
     }
 
+    IEnumerator tryToOpen()
+    {
+        // animation for trying to open
+        float openspeed = .05f;
+        float origY = verr.transform.localPosition.y;
+        if (checkCombination())
+        {
+            print("Correct!");
+            while (verr.transform.localPosition.y <= origY + .5)
+            {//made animation 1: open...
+                verr.transform.Translate(0, openspeed * 3 * Time.deltaTime, 0);
+                yield return null;
+            }
+            //made animation 2: rotate round pivot...
+            float objectiveRotation = 180,
+                  rot = 0;
+            while (rot < objectiveRotation)
+            {
+                verr.transform.RotateAround(pivot.transform.position, pivot.transform.forward, rotationSpeed * Time.deltaTime);
+                rot += rotationSpeed * Time.deltaTime;
+                yield return null;
+            }
+            yield return new WaitForSeconds(0.1f);
+            //destroy object
+            Destroy(gameObject);
+        } else
+        {
+            print("Fail!");
+            while (verr.transform.localPosition.y <= origY+.2)
+            {//failed animation
+                verr.transform.Translate(0, openspeed * Time.deltaTime, 0);
+                yield return null;
+            } yield return new WaitForSeconds(0.2f);
+            while (verr.transform.localPosition.y >= origY)
+            {//back to normal
+                verr.transform.Translate(0, -openspeed * Time.deltaTime, 0);
+                yield return null;
+            }
+        }
+        print(verr.transform.position);
+        yield return null;
+    }
+
     void changeState()
     {
         playerData.playingMinigame = !playerData.playingMinigame;
@@ -85,7 +158,6 @@ public class Padlock_Object : InventoryObject
         {
             minigameCanvas.gameObject.SetActive(false);
             look.LockMouse(false);
-
         }
     }
 
@@ -110,9 +182,9 @@ public class Padlock_Object : InventoryObject
         Transform UICODE = minigameCanvas.Find("UI_Code");
         TMPro.TextMeshProUGUI text = UICODE.GetComponent<TMPro.TextMeshProUGUI>();
         string newtext = string.Format("{0}:{1}:{2}", state[0], state[1], state[2]);
-        print(newtext);
-        print(UICODE);
-        print(text);
+        //print(newtext);
+        //print(UICODE);
+        //print(text);
         text.text = newtext; 
     }
 
