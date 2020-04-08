@@ -13,6 +13,7 @@ public class Padlock_Object : InventoryObject
     public bool[] triggers;
     public Transform minigameCanvas;
     CharacterData playerData;
+    [SerializeField] DoorObject door;
     void Start()
     {
         pickable = false;
@@ -126,7 +127,10 @@ public class Padlock_Object : InventoryObject
                 yield return null;
             }
             yield return new WaitForSeconds(0.1f);
+            //unlock door
+            door.changeState(false);
             //destroy object
+            playerData.playingMinigame = false;
             Destroy(gameObject);
         } else
         {

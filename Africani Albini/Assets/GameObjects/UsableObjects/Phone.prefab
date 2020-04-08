@@ -671,8 +671,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pickable: 1
   weight: 1
-  objectName: Chiave
-  description: Chiave Arrugginita
+  objectName: Bigliettino
+  description: "La combinazione \xE8 quella della valigetta di Samuel L Jackson"
   playerObject: {fileID: 0}
   icon: {fileID: -8846318263883502149, guid: 37d693ebb66855b4e84f1865e4874a90, type: 3}
   equip: 0
