@@ -205,8 +205,8 @@ public class InventoryManager : MonoBehaviour
                 // F => utilizzo reciproco
                 if (Input.GetKeyDown(KeyCode.F) && selection >= 0)
                 {
-                    inv.useObject(objects[selection].GetComponent<InventoryObject>());
-                    objects[selection].GetComponent<InventoryObject>().useObject(inv);
+                    //inv.useObject(objects[selection].GetComponent<InventoryObject>());
+                    objects[selection].GetComponent<InventoryObject>().useObject(inv); //use object in hand with the object down
                 }
             }
         } else

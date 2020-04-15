@@ -37,6 +37,7 @@ public class PalaObject : InventoryObject
         print("TODO Animazione Badile");
         if (oth.objectName == "Zolla di Terra")
         {
+            oth.useObject(this);
             print("Scavando...");
             //io.useObject(GetComponent<PalaObject>());
             StartCoroutine(DestroyAfterEndZolla(oth.transform.gameObject));
