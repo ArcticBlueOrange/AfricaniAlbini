@@ -12,19 +12,22 @@ public class Padlock_Object : InventoryObject
     public float rotationSpeed = 500f;
     public bool[] triggers;
     public Transform minigameCanvas;
-    CharacterData playerData;
+    public Transform GUICanvas;
+    public bool isLocking;
+    CharacterData data;
     [SerializeField] DoorObject door;
     void Start()
     {
         pickable = false;
+        isLocking = true;
         playerObject = GameObject.FindGameObjectWithTag("Player");
-        playerData = playerObject.GetComponent<CharacterData>();
+        data = playerObject.GetComponent<CharacterData>();
         Physics.IgnoreCollision(playerObject.GetComponent<Collider>(), GetComponent<Collider>());
         rb = GetComponent<Rigidbody>();
         state = new int[3] { 0, 0, 0 };
         correctCombination = new int[3] { 6, 6, 6 };
         minigameCanvas = transform.Find("MiniGameCanvas");//GetComponent<Canvas>();
-        triggers = new bool[3] { false, false, false};
+        //triggers = new bool[3] { false, false, false};
         gears = new GameObject[3];
         gears[0] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 0").gameObject;
         gears[1] = minigameCanvas.Find("Minigame_Padlock").transform.Find("Tambour 1").gameObject;
@@ -34,34 +37,18 @@ public class Padlock_Object : InventoryObject
         minigameCanvas.gameObject.SetActive(false);
         triggers = new bool[3] { false, false, false }; //use for debugging purpose
         //StartCoroutine(rotateGear(0));
-        
     }
 
     void Update()
     {
-        
-        //if (triggers[0] && playerData.playingMinigame)
-        //{
-        //    triggers[0] = false;
-        //    StartCoroutine(rotateGear(0));
-        //}
-        //if (triggers[1] && playerData.playingMinigame)
-        //{
-        //    triggers[1] = false;
-        //    StartCoroutine(rotateGear(1));
-        //}
-        //if (triggers[2] && playerData.playingMinigame)
-        //{
-        //    triggers[2] = false;
-        //    StartCoroutine(rotateGear(2));
-        //}
-
-        if (playerData.playingMinigame)
+        ownedCoordinates();
+        if (data.playingMinigame)
         {
             if (Input.GetKeyDown(KeyCode.Mouse0))
             {
                 //Generate raycast from mouse to canvas
-                Ray ray = playerData.control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                //Ray ray = data.control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
+                Ray ray = GUICanvas.Find("GUICamera").GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
                 int layer = 5;
                 if (Physics.Raycast(ray, out RaycastHit hit, layer))
                 {
@@ -130,8 +117,11 @@ public class Padlock_Object : InventoryObject
             //unlock door
             door.changeState(false);
             //destroy object
-            playerData.playingMinigame = false;
-            Destroy(gameObject);
+            //data.playingMinigame = false;
+            changeState();
+            //Destroy(gameObject);
+            //instead of destroyin the object, equip for later use
+            turnPickable();
         } else
         {
             print("Fail!");
@@ -146,28 +136,39 @@ public class Padlock_Object : InventoryObject
                 yield return null;
             }
         }
-        print(verr.transform.position);
+        //print(verr.transform.position);
         yield return null;
     }
 
+
+
+
     void changeState()
     {
-        playerData.playingMinigame = !playerData.playingMinigame;
+        data.playingMinigame = !data.playingMinigame;
         CharController_Look look = playerObject.GetComponent<CharacterData>().look;
-        if (playerData.playingMinigame)
+        if (data.playingMinigame)
         {
+            print("Playingminigame");
             minigameCanvas.gameObject.SetActive(true);
             look.LockMouse(true);
+            data.cam.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessLayer>().enabled = true;
+            GUICanvas.Find("GUICamera").gameObject.SetActive(true);
+            GUICanvas.Find("_GUI").gameObject.SetActive(false);
         } else
         {
+            print("NotPlayingminigame");
             minigameCanvas.gameObject.SetActive(false);
             look.LockMouse(false);
+            data.cam.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessLayer>().enabled = false;
+            GUICanvas.Find("GUICamera").gameObject.SetActive(false);
+            GUICanvas.Find("_GUI").gameObject.SetActive(true);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.tag == "Player" && playerData.playingMinigame)
+        if (other.tag == "Player" && data.playingMinigame)
             changeState();
     }
 
@@ -194,54 +195,32 @@ public class Padlock_Object : InventoryObject
 
     public override void useObject()
     {
-        changeState();
-        //// point raycast from camera of player
-        //Ray ray = playerObject.GetComponent<CharacterData>().control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-        //int layermask = (1 << 11);//~
-        //// if (Physics.Raycast(ray, out RaycastHit hit, layermask)) //not working uh?
-        //RaycastHit[] hits = Physics.RaycastAll(ray, 10f);//, layermask);
-        //foreach(RaycastHit hit in hits)
-        //{// check if ray hits any of the three gears
-        //    // tried changing layer where gears are set, didn't work
-        //    print("Hit " + hit.collider.transform.name);
-        //    // looks inefficient. comunque non funziona
-        //    for (int i = 0; i < gears.Length; i++)
-        //    {
-        //        GameObject gear = gears[i];
-        //        if (hit.collider.gameObject == gear.gameObject)
-        //        {
-        //            //print("Hit " + i);
-        //            StartCoroutine(rotateGear(i));
-        //        }
-        //    }
-        //    // if so, rotate it
-        //    // otherwise, do'na sega
-        //    /// ^ questo già lo fa
-        //}
-
-        // // perform animation
-        // print("TODO Animazione Badile");
-        // // chck if object "zolladiterra" in front" e vicìn
-        // Ray ray = playerObject.GetComponent<CharacterData>().control.cam.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-        // if (Physics.Raycast(ray, out RaycastHit hit))
-        // {
-        //     print(hit.transform.gameObject.name + ", " + hit.distance);
-        //     if (hit.transform.gameObject.GetComponent<InventoryObject>() && hit.distance <= 10)
-        //     {
-        //         InventoryObject io = hit.transform.gameObject.GetComponent<InventoryObject>();
-        //         if (io.objectName == "Zolla di Terra")
-        //         {
-        //             print("Scavando...");
-        //             io.useObject();
-        //             StartCoroutine(DestroyAfterEndZolla(hit.transform.gameObject));
-        //         }
-        //     }
-        // }
-        // //  if so, destroy both zolla and pala
-        // //  otherwise, do 'na sega
+        if(isLocking)
+            changeState();
+        else
+        {
+            print("TODO Implement");
+            //TODO USO QUANDO IL LUCCHETTO è  IN MANO
+        }
     }
 
+    void turnPickable()
+    {
+        pickable = !pickable;
+        if (pickable)
+        {
+            rb.constraints = RigidbodyConstraints.None;
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            isLocking = false;
+        }
+        else
+        {
+            print("Not implemented");
+            //TODO decide howto do it
+        }
 
+    }
 
 
 }

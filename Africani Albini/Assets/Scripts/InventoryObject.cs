@@ -50,12 +50,10 @@ public class InventoryObject : MonoBehaviour
     {
         print("(virtual) Unequipping " + name);
         equip = false;
-        //pickable = false;
+        pickable = true;// !equip;
         transform.Find("Mesh").gameObject.SetActive(equip);
         transform.gameObject.SetActive(equip);
         setColliders(true);
-
-        pickable = true;// !equip;
     }
 
     public virtual void dropObject()

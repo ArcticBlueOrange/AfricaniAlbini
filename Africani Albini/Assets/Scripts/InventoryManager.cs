@@ -45,6 +45,7 @@ public class InventoryManager : MonoBehaviour
                 refreshUI();
                 InventoryActive = true;
                 data.look.LockMouse(true);
+                data.cam.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessLayer>().enabled = true; //blur image
                 Time.timeScale = 0.3f;
             }
             else
@@ -53,6 +54,7 @@ public class InventoryManager : MonoBehaviour
                 InventoryMenu.transform.Find("_INVENTORY").gameObject.SetActive(false);
                 InventoryActive = false;
                 data.look.LockMouse(false);
+                data.cam.GetComponent<UnityEngine.Rendering.PostProcessing.PostProcessLayer>().enabled = false; //disable blur
                 Time.timeScale = 1f;
             }
         }

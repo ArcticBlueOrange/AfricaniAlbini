@@ -7,6 +7,7 @@ public class CharacterData : MonoBehaviour
     public InventoryManager inventory;
     public CharController_Motor control;
     public CharController_Look look;
+    public Transform cam;
 
 
     public bool playingMinigame = false; //TODO expand this and inglobare the whole minigame stuff in the player
@@ -17,6 +18,7 @@ public class CharacterData : MonoBehaviour
         inventory = GetComponent<InventoryManager>();
         control = GetComponent<CharController_Motor>();
         look = GetComponent<CharController_Look>();
+        cam = transform.Find("Camera");
     }
 
 }
